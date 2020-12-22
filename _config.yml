@@ -1,7 +1,12 @@
-name: 
-theme: jekyll-theme-slate
+name: Minimal theme
+description: Minimal is a theme for GitHub Pages.
+theme: jekyll-theme-minimal 
 markdown: kramdown
-google_analytics: UA-98293807-1
+google_analytics: UA-56515654-4
 
 gems:
   - jekyll-sitemap
+  
+gem "github-pages", group: :jekyll_plugins
+
+
