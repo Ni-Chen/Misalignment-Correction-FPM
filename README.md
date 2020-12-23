@@ -1,4 +1,4 @@
-# Misalignment Correction of Fourier Ptychographic Microscopy [![MIT Licence](https://badges.frapsoft.com/os/mit/mit.svg?v=103)](https://opensource.org/licenses/mit-license.php)
+# Misalignment Correction of Fourier Ptychographic Microscopy 
 
 Implementation of 
 - "Analysis of Fourier ptychographic microscopy with half of the captured images" by Ao Zhou, Ni Chen*, Haichao Wang, and Guohai Situ [[Paper]](https://iopscience.iop.org/article/10.1088/2040-8986/aad453/pdf)
