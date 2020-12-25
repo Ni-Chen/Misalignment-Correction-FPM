@@ -1,4 +1,10 @@
-# Misalignment Correction of Fourier Ptychographic Microscopy 
+---
+title: "Misalignment Correction of Fourier Ptychographic Microscopy "
+layout: homelay
+excerpt: ""
+sitemap: false
+---
+
 
 Implementation of 
 - "Analysis of Fourier ptychographic microscopy with half of the captured images" by Ao Zhou, Ni Chen*, Haichao Wang, and Guohai Situ [[Paper]](https://iopscience.iop.org/article/10.1088/2040-8986/aad453/pdf)
