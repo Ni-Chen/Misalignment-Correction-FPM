@@ -1,6 +1,5 @@
 
-Implementation of 
-- "Analysis of Fourier ptychographic microscopy with half of the captured images" by Ao Zhou, [Ni Chen*](https://ni-chen.github.io/), Haichao Wang, and Guohai Situ [[Paper]](https://iopscience.iop.org/article/10.1088/2040-8986/aad453/pdf)
+Implementation of "Analysis of Fourier ptychographic microscopy with half of the captured images" by Ao Zhou, [Ni Chen*](https://ni-chen.github.io/), Haichao Wang, and Guohai Situ [[Paper]](https://iopscience.iop.org/article/10.1088/2040-8986/aad453/pdf)
 
 
 

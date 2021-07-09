@@ -4,7 +4,7 @@ title: "Fast and robust misalignment correction of Fourier ptychographic microsc
 ---
 
 <h2 class="section-title"> Fast and robust misalignment correction of Fourier ptychographic microscopy for full field of view reconstruction  </h2>
-<h5 class="pubname"> OpticsExpress, 2018 </h5>
+<h5 class="pubname"> Optics Express, 2018 </h5>
 <nav class="text-center" style="width: 100%">
   <a href="" class="author">Ao Zhou<sup>1</sup></a>
   <a href="" class="author">Wei Wang<sup>1</sup></a>
