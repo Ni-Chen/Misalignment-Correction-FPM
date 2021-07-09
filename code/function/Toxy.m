@@ -8,19 +8,23 @@ function outImage = Toxy(oriImage, min_val, max_val)
     outImage = zeros(Ny, Nx, Chan);
     maxI = max(max(double(oriImage(:))));
     minI = min(min(double(oriImage(:))));
-        
+
     for c = 1:Chan
-        tempImg = oriImage(:,:,c);           
-%         maxI = max(max(double(tempImg)));
-%         minI = min(min(double(tempImg)));
+        tempImg = oriImage(:, :, c);
+        %         maxI = max(max(double(tempImg)));
+        %         minI = min(min(double(tempImg)));
         if maxI == minI
-            if minI~=0
-                outImage(:,:,c) = double(tempImg)*max_val/minI;
+
+            if minI ~= 0
+                outImage(:, :, c) = double(tempImg) * max_val / minI;
             end
+
         else
-            coeA = (max_val-min_val)/double(maxI-minI);
-            coeB = min_val-minI*coeA;
-            outImage(:,:,c) = double(tempImg).*coeA+coeB;
+            coeA = (max_val - min_val) / double(maxI - minI);
+            coeB = min_val - minI * coeA;
+            outImage(:, :, c) = double(tempImg) .* coeA + coeB;
         end
-    end 
+
+    end
+
 end

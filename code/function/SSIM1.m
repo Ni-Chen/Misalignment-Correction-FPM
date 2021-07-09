@@ -1,52 +1,51 @@
-function [mssim, ssim_map,siga_sq,sigb_sq] = SSIM1(ima, imb)  
-% ========================================================================  
-%ssimµÄËã·¨Ö÷Òª²Î¿¼ÈçÏÂÂÛÎÄ£º  
-%Z. Wang, A. C. Bovik, H. R. Sheikh, and E. P. Simoncelli, "Image  
-% quality assessment: From error visibility to structural similarity,"  
-% IEEE Transactios on Image Processing, vol. 13, no. 4, pp. 600-612,  
-% Apr. 2004.  
-%  Ê×ÏÈ¶ÔÍ¼Ïñ¼Ó´°´¦Àí£¬w=fspecial('gaussian', 11, 1.5);  
-%                 (2*ua*ub+C1)*(2*sigmaa*sigmab+C2)  
-%   SSIM(A,B)=¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª  
-%              (ua*ua+ub*ub+C1)(sigmaa*sigmaa+sigmab*sigmab+C2)  
-%     C1=£¨K1*L£©;  
-%     C2=(K2*L);   K1=0.01£¬K2=0.03  
-%     LÎª»Ò¶È¼¶Êý£¬L=255  
-%-------------------------------------------------------------------  
-%     ima - ±È½ÏÍ¼ÏñA  
-%     imb - ±È½ÏÍ¼ÏñB  
-%  
-% ssim_map - ¸÷¼Ó´°ºóµÃµ½µÄSSIM£¨A,B|w£©×é³ÉµÄÓ³Éä¾ØÕó  
-%    mssim - ¶Ô¼Ó´°µÃµ½µÄSSIM£¨A,B|w£©ÇóÆ½¾ù£¬¼´×îÖÕµÄSSIM£¨A,B£©  
-%  siga_sq - Í¼ÏñA¸÷´°¿ÚÄÚ»Ò¶ÈÖµµÄ·½²î  
-%  sigb_sq - Í¼ÏñB¸÷´°¿ÚÄÚ»Ò¶ÈÖµµÄ·½²î  
-%-------------------------------------------------------------------  
-%  Cool_ben  
-%========================================================================  
-  
-w = fspecial('gaussian', 11, 1.5);  %window ¼Ó´°  
-K(1) = 0.01;                      
-K(2) = 0.03;                      
-L = 2^16-1;       
-ima = double(ima);  
-imb = double(imb);  
-  
-C1 = (K(1)*L)^2;  
-C2 = (K(2)*L)^2;  
-w = w/sum(sum(w));  
-  
-ua   = filter2(w, ima, 'valid');%¶Ô´°¿ÚÄÚ²¢Ã»ÓÐ½øÐÐÆ½¾ù´¦Àí£¬¶øÊÇÓë¸ßË¹¾í»ý£¬  
-ub   = filter2(w, imb, 'valid'); % ÀàËÆ¼ÓÈ¨Æ½¾ù  
-ua_sq = ua.*ua;  
-ub_sq = ub.*ub;  
-ua_ub = ua.*ub;  
-siga_sq = filter2(w, ima.*ima, 'valid') - ua_sq;  
-sigb_sq = filter2(w, imb.*imb, 'valid') - ub_sq;  
-sigab = filter2(w, ima.*imb, 'valid') - ua_ub;  
-  
-ssim_map = ((2*ua_ub + C1).*(2*sigab + C2))./((ua_sq + ub_sq + C1).*(siga_sq + sigb_sq + C2));  
-  
-  
-mssim = mean2(ssim_map);  
-  
-return  
+function [mssim, ssim_map, siga_sq, sigb_sq] = SSIM1(ima, imb)
+    % ========================================================================
+    %ssimï¿½ï¿½ï¿½ã·¨ï¿½ï¿½Òªï¿½Î¿ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä£ï¿½
+    %Z. Wang, A. C. Bovik, H. R. Sheikh, and E. P. Simoncelli, "Image
+    % quality assessment: From error visibility to structural similarity,"
+    % IEEE Transactios on Image Processing, vol. 13, no. 4, pp. 600-612,
+    % Apr. 2004.
+    %  ï¿½ï¿½ï¿½È¶ï¿½Í¼ï¿½ï¿½Ó´ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½w=fspecial('gaussian', 11, 1.5);
+    %                 (2*ua*ub+C1)*(2*sigmaa*sigmab+C2)
+    %   SSIM(A,B)=ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+    %              (ua*ua+ub*ub+C1)(sigmaa*sigmaa+sigmab*sigmab+C2)
+    %     C1=ï¿½ï¿½K1*Lï¿½ï¿½;
+    %     C2=(K2*L);   K1=0.01ï¿½ï¿½K2=0.03
+    %     LÎªï¿½Ò¶È¼ï¿½ï¿½ï¿½ï¿½ï¿½L=255
+    %-------------------------------------------------------------------
+    %     ima - ï¿½È½ï¿½Í¼ï¿½ï¿½A
+    %     imb - ï¿½È½ï¿½Í¼ï¿½ï¿½B
+    %
+    % ssim_map - ï¿½ï¿½ï¿½Ó´ï¿½ï¿½ï¿½Ãµï¿½ï¿½ï¿½SSIMï¿½ï¿½A,B|wï¿½ï¿½ï¿½ï¿½Éµï¿½Ó³ï¿½ï¿½ï¿½ï¿½ï¿½
+    %    mssim - ï¿½Ô¼Ó´ï¿½ï¿½Ãµï¿½ï¿½ï¿½SSIMï¿½ï¿½A,B|wï¿½ï¿½ï¿½ï¿½Æ½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Õµï¿½SSIMï¿½ï¿½A,Bï¿½ï¿½
+    %  siga_sq - Í¼ï¿½ï¿½Aï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ú»Ò¶ï¿½Öµï¿½Ä·ï¿½ï¿½ï¿½
+    %  sigb_sq - Í¼ï¿½ï¿½Bï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ú»Ò¶ï¿½Öµï¿½Ä·ï¿½ï¿½ï¿½
+    %-------------------------------------------------------------------
+    %  Cool_ben
+    %========================================================================
+
+    w = fspecial('gaussian', 11, 1.5); %window ï¿½Ó´ï¿½
+    K(1) = 0.01;
+    K(2) = 0.03;
+    L = 2^16 - 1;
+    ima = double(ima);
+    imb = double(imb);
+
+    C1 = (K(1) * L)^2;
+    C2 = (K(2) * L)^2;
+    w = w / sum(sum(w));
+
+    ua = filter2(w, ima, 'valid'); %ï¿½Ô´ï¿½ï¿½ï¿½ï¿½Ú²ï¿½Ã»ï¿½Ð½ï¿½ï¿½ï¿½Æ½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ë¹ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+    ub = filter2(w, imb, 'valid'); % ï¿½ï¿½ï¿½Æ¼ï¿½È¨Æ½ï¿½ï¿½
+    ua_sq = ua .* ua;
+    ub_sq = ub .* ub;
+    ua_ub = ua .* ub;
+    siga_sq = filter2(w, ima .* ima, 'valid') - ua_sq;
+    sigb_sq = filter2(w, imb .* imb, 'valid') - ub_sq;
+    sigab = filter2(w, ima .* imb, 'valid') - ua_ub;
+
+    ssim_map = ((2 * ua_ub + C1) .* (2 * sigab + C2)) ./ ((ua_sq + ub_sq + C1) .* (siga_sq + sigb_sq + C2));
+
+    mssim = mean2(ssim_map);
+
+    return
