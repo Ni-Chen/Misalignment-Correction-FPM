@@ -1,5 +1,13 @@
 
-Implementation of "Analysis of Fourier ptychographic microscopy with half of the captured images" by Ao Zhou, [Ni Chen*](https://ni-chen.github.io/), Haichao Wang, and Guohai Situ [[Paper]](https://iopscience.iop.org/article/10.1088/2040-8986/aad453/pdf)
+# Fast and robust misalignment correction of {F}ourier ptychographic microscopy for full field of view reconstruction
+
+
+
+[![License: GPL v2](https://img.shields.io/badge/License-GPL_v2-blue.svg)](https://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html)
+
+
+
+Implementation of "Fast and robust misalignment correction of {F}ourier ptychographic microscopy for full field of view reconstruction" by Ao Zhou, [Ni Chen*](https://ni-chen.github.io/), Haichao Wang, and Guohai Situ [[Paper]]([10.1364/oe.26.023661](https://doi.org/10.1364/OE.26.023661))
 
 
 
