@@ -43,14 +43,6 @@ python tools\run_all.py --methods pie mcfpm      # log and outcomes in notebooks
 python tools\summarize_results.py                # notebooks\output\comparison_pie_mcfpm.png
 ```
 
-| method | what it is | MATLAB |
-| --- | --- | --- |
-| `pie` | conventional FPM with the LED array at its nominal position | `pie_solver.m`, `loop < 10` |
-| `sa` | each LED's position annealed independently inside the iterations | `pie_solver.m`, `loop >= 10` |
-| `pcfpm` | per-LED annealing pulled back onto a rigid array by regression | `pie_solver_led.m` |
-| `mcfpm` | the method of the paper: anneal the array pose with a whole reconstruction as the cost, then reconstruct | `main.m` |
-
-A sweep updates every LED once, in spiral order; it is one iteration of the MATLAB `tt` loop, and `iterations` counts them. On a laptop GPU (RTX 5080), `pie` takes about 4 s and `mcfpm` with `main.m`'s settings (all 289 LEDs in the cost, 10 sweeps per evaluation, 100 annealing iterations) 4.6 minutes; `coarse_array_size: 5` (the paper's mcFPM I) puts 25 LEDs instead of 289 into each evaluation.
 
 ## Repository layout
 
