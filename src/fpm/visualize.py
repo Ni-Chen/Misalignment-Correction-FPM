@@ -60,7 +60,7 @@ def plot_pupil(ax_amplitude, ax_phase, pupil) -> None:
 
 
 def plot_spectrum_centres(ax, result) -> None:
-    """Nominal against final window centres, the ``scatter`` of the MATLAB solvers."""
+    """Nominal against final window centres."""
     nominal = np.asarray(result.initial_spectrum_centres)
     final = np.asarray(result.spectrum_centres)
     ax.scatter(nominal[:, 0], nominal[:, 1], s=12, marker="x", color="k", label="nominal")
@@ -104,7 +104,7 @@ def summary_figure(result, model=None, *, title: str | None = None):
         # Entry 0 is the cost of the starting pose, before any annealing step.
         plot_trace(axes[7], result.anneal_history, "Annealing cost (best)", "annealing iteration")
     else:
-        # One sweep updates every LED once: an iteration of MATLAB's tt loop, numbered like it.
+        # One sweep updates every LED once; sweeps are numbered from 1.
         plot_trace(axes[7], result.loss, "Intensity misfit", "sweep over all LEDs", first=1)
     figure.suptitle(title or result.method, fontsize=FONT_SIZE + 2)
     figure.tight_layout()

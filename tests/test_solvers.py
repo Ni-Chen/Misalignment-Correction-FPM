@@ -30,12 +30,11 @@ def test_pie_reconstructs_an_aligned_acquisition(tmp_path):
 
 
 def test_rounding_the_centres_costs_pie_accuracy(tmp_path):
-    """pie_solver.m rounds the centres; on an aligned acquisition that alone raises the misfit.
+    """``pie`` rounds the centres; on an aligned acquisition that alone raises the misfit.
 
     The nominal centre of an even-sized spectrum is a half pixel, and rounding
-    it moves the window one pixel off the zero frequency -- a half-pixel bias
-    the conventional-FPM baseline of the MATLAB comparisons carries. ``pie``
-    keeps it to reproduce that baseline.
+    it moves the window one pixel off the zero frequency: a half-pixel bias of
+    the conventional-FPM baseline.
     """
     model = cpu_model(simulated_dataset(tmp_path, pose=None), "pie")
     rounded = model.run().loss[-1]
@@ -49,7 +48,7 @@ def test_misalignment_degrades_pie(tmp_path):
     assert shifted.loss[-1] > 3 * aligned.loss[-1]
 
 
-@pytest.mark.parametrize("cost", ["legacy", "intensity"])
+@pytest.mark.parametrize("cost", ["amplitude_vs_intensity", "intensity"])
 def test_mcfpm_recovers_the_array_shift(tmp_path, cost):
     """The annealed pose cuts every LED's window within a pixel of where the truth cuts it.
 
@@ -71,15 +70,15 @@ def test_mcfpm_recovers_the_array_shift(tmp_path, cost):
     assert result.anneal_history[-1] < result.anneal_history[0]
 
 
-def test_intensity_cost_separates_poses_more_sharply_than_legacy(tmp_path):
-    """The MATLAB cost compares an amplitude with an intensity; Eq. 15 compares intensities."""
+def test_intensity_cost_separates_poses_more_sharply(tmp_path):
+    """``amplitude_vs_intensity`` compares an amplitude with an intensity; Eq. 15 compares intensities."""
     model = cpu_model(simulated_dataset(tmp_path), "mcfpm")
     order = model.scan_order[:25]
 
     def cost(pose, kind):
         return model.reconstruct(model.spectrum_centres(pose), 5, order=order, cost=kind)[3][-1]
 
-    for kind, minimum_ratio in (("legacy", 1.0002), ("intensity", 2.0)):
+    for kind, minimum_ratio in (("amplitude_vs_intensity", 1.0002), ("intensity", 2.0)):
         assert cost(model.nominal_pose, kind) / cost(TRUE_POSE, kind) > minimum_ratio
 
 

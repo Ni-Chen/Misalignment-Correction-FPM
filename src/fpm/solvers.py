@@ -6,8 +6,7 @@ array pose itself with the whole reconstruction as the cost. Both are
 functions of a configured :class:`FPM` and are exposed as ``model.pcfpm()``
 and ``model.mcfpm()``.
 
-Default settings are the values in the MATLAB code, not those in the paper
-where the two differ.
+The docstrings say where the defaults differ from the paper's description.
 """
 
 from __future__ import annotations
@@ -20,9 +19,9 @@ from scipy.optimize import least_squares
 from .model import FPM, ReconstructionResult, _pose_for_humans
 from .optimizers import simulated_annealing
 
-# pie_solver_coarse.m divides its error by this before handing it to the
-# annealer. The acceptance of an uphill step depends on cost / temperature,
-# so the constant is part of the search, not cosmetic.
+# The coarse error is divided by this before it reaches the annealer. The
+# acceptance of an uphill step depends on cost / temperature, so the
+# constant is part of the search, not cosmetic.
 COARSE_COST_SCALE = 1e4
 
 PCFPM_BOUNDS = {"x_mm": [-4.0, 4.0], "y_mm": [-4.0, 4.0], "rotation_deg": [-2.0, 2.0], "height_mm": [0.0, 6.5]}
@@ -32,8 +31,8 @@ MCFPM_BOUNDS = {"x_mm": [-4.0, 4.0], "y_mm": [-4.0, 4.0], "rotation_deg": [0.0, 
 def fit_led_pose(model: FPM, centres: np.ndarray, pose0, lower, upper, frames) -> np.ndarray:
     """Least-squares array pose whose spectrum centres best match ``centres`` on ``frames``.
 
-    The regression step of pcFPM (``fpm_fit.m`` under ``fmincon``). A
-    dimension whose bounds coincide is held at that value.
+    The regression step of pcFPM. A dimension whose bounds coincide is held
+    at that value.
     """
     pose0 = np.clip(np.asarray(pose0, dtype=np.float64), lower, upper)
     free = lower < upper
@@ -53,7 +52,7 @@ def fit_led_pose(model: FPM, centres: np.ndarray, pose0, lower, upper, frames) -
 
 
 def pcfpm(model: FPM) -> ReconstructionResult:
-    """Position-correcting FPM, the comparison method of ``pie_solver_led.m``.
+    """Position-correcting FPM, one of the comparison methods of the paper.
 
     Every outer iteration restarts the object and pupil and runs
     ``sweeps_per_iteration`` sweeps; the last of them anneals each LED's
@@ -64,8 +63,7 @@ def pcfpm(model: FPM) -> ReconstructionResult:
 
     The search radius is ``search_radius_px / search_radius_divisor`` for the
     first ``divided_search_iterations`` outer iterations and
-    ``search_radius_px`` afterwards, exactly as the MATLAB code resets and
-    divides ``dkshift``.
+    ``search_radius_px`` afterwards.
 
     ``result.loss`` holds the intensity misfit of every sweep and
     ``result.led_pose_history`` the fitted pose after every outer iteration.
@@ -106,25 +104,25 @@ def pcfpm(model: FPM) -> ReconstructionResult:
 
 
 def mcfpm(model: FPM) -> ReconstructionResult:
-    """Misalignment-correcting FPM (``main.m`` with ``pie_solver_coarse.m`` and ``pie_solver_fine.m``).
+    """Misalignment-correcting FPM, the method of the paper.
 
     *Coarse.* The array pose ``(x, y, theta, height)`` is annealed within
     ``pose_bounds``; each candidate is scored by a reconstruction of
     ``coarse_iterations`` sweeps from scratch over the central
     ``coarse_array_size x coarse_array_size`` LEDs, whose last-sweep error,
     divided by :data:`COARSE_COST_SCALE`, is the cost. ``coarse_cost``
-    chooses that error: ``legacy`` compares the modelled amplitude with the
-    measured intensity, as the MATLAB code does, and ``intensity`` compares
+    chooses that error: ``amplitude_vs_intensity`` compares the modelled
+    amplitude with the measured intensity, and ``intensity`` compares
     intensities, as Eq. 15 of the paper states.
 
     *Fine.* A reconstruction of ``fine_iterations`` sweeps over all LEDs with
     the annealed pose. From sweep ``fine_plain_sweeps`` on, each LED's centre
     is additionally annealed within ``fine_search_radius_px`` -- the paper's
-    mcFPM III. With the MATLAB setting of two sweeps that never happens.
+    mcFPM III. With the default of two sweeps that never happens.
 
-    The defaults are the MATLAB ones: all 17 x 17 LEDs in the cost (the
-    paper's mcFPM II; ``coarse_array_size: 5`` is mcFPM I), 10 coarse sweeps
-    (the paper says 5), rotation and height held at their nominal values.
+    By default all 17 x 17 LEDs enter the cost (the paper's mcFPM II;
+    ``coarse_array_size: 5`` is mcFPM I), with 10 coarse sweeps (the paper
+    says 5) and rotation and height held at their nominal values.
 
     ``result.anneal_history`` holds the best coarse cost after every
     annealing iteration and ``result.loss`` the intensity misfit of every fine sweep.
@@ -132,7 +130,7 @@ def mcfpm(model: FPM) -> ReconstructionResult:
     recon = model.recon
     coarse_iterations = int(recon.get("coarse_iterations", 10))
     coarse_size = int(recon.get("coarse_array_size", model.array_size))
-    coarse_cost = str(recon.get("coarse_cost", "legacy"))
+    coarse_cost = str(recon.get("coarse_cost", "amplitude_vs_intensity"))
     fine_iterations = int(recon.get("fine_iterations", 2))
     fine_plain_sweeps = int(recon.get("fine_plain_sweeps", 9))
     fine_radius = float(recon.get("fine_search_radius_px", 3.0))

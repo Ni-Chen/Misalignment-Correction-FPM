@@ -1,7 +1,7 @@
 dataset:
   name: root_edge_upper_right
   notes: >-
-    Young plant root, edge segment 550 px above and 750 px right of the sensor centre (image_center = [550 -750]), the same place as the USAF edge segment. main.m notes the true offset as about 2.4 x this.
+    Young plant root, edge segment 550 px above and 750 px right of the sensor centre, the same place as the USAF edge segment.
 
 data:
   file: raw/20170531-3-550-750.mat

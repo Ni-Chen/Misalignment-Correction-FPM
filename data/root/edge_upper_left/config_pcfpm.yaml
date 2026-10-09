@@ -1,8 +1,0 @@
-# Reproduces FPM_nosa_sa_or_pcsa.m: pcFPM (pie_solver_led.m, loop = 9) on this
-# segment, with the patch placed at 2.28 x its nominal offset as that script
-# does ("2.28 is around the true value"). Every other key takes its default
-# (data/_template/config_pcfpm.yaml).
-
-model:
-  sample_offset_x_mm: 2.223     # 2.28 x 600 px x 1.625e-3 mm
-  sample_offset_y_mm: 2.5935    # 2.28 x 700 px x 1.625e-3 mm

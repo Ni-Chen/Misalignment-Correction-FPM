@@ -1,7 +1,7 @@
 dataset:
   name: root_edge_upper_left
   notes: >-
-    Young plant root, edge segment 700 px above and 600 px left of the sensor centre (image_center = [700 600]): "outersider part bio-data", the dataset of FPM_nosa_sa_or_pcsa.m. That script uses 2.28 x this offset ("around the true value"); its config_pie/sa/pcfpm.yaml reproduce that.
+    Young plant root, edge segment 700 px above and 600 px left of the sensor centre.
 
 data:
   file: raw/20170531-3-700600.mat

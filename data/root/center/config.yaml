@@ -1,7 +1,7 @@
 dataset:
   name: root_center
   notes: >-
-    Young plant root, 200 x 200 px segment at the sensor centre. Not used by any script of this repository (the half-image analysis of the JOPT paper read it); the 113 mm LED height is the root value noted in system.m.
+    Young plant root, 200 x 200 px segment at the sensor centre, recorded with the LED array 113 mm below the sample.
 
 data:
   file: raw/20170531-3.mat

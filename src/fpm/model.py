@@ -11,16 +11,17 @@ the sibling modules and is imported here.
     result = model.run()
     result.save(output_dir("data/usaf/edge_upper_right", "mcfpm"), model=model, summary=True)
 
-Conventions shared by every solver, all taken from the MATLAB code:
+Conventions shared by every solver:
 
 * A spectrum centre is the continuous pixel coordinate, 0-based, at which an
   LED's wavevector lands in the ``size_hr`` object spectrum:
   ``(size_hr - 1) / 2 + k / dk``. Its window is the ``size_lr`` block starting
-  at ``matlab_round(centre - (size_lr - 1) / 2)``.
+  at ``round_half_away(centre - (size_lr - 1) / 2)``.
 * The low-resolution field of one LED is
-  ``iFT(scale * window * CTF * pupil * H)`` with ``scale = (size_lr / size_hr)**2``,
-  and its modelled amplitude is ``scale`` times the modulus of that field, so the
-  modulus is replaced by ``sqrt(I) / scale``.
+  ``iFT(scale * window * transfer_function * pupil * defocus_kernel)`` with
+  ``scale = (size_lr / size_hr)**2``, and its modelled amplitude is ``scale``
+  times the modulus of that field, so the modulus is replaced by
+  ``sqrt(I) / scale``.
 * The object spectrum starts as the zero-padded spectrum of the centre frame's
   *intensity*, and the pupil as ones.
 """
@@ -38,7 +39,7 @@ import torch
 
 from .config import DATA_ROOT, load_config
 from .data import IntensityData, load_intensity
-from .fourier import FT, iFT, matlab_round
+from .fourier import FT, iFT, round_half_away
 from .illumination import illumination_wavevectors, led_grid, spiral_order
 from .optimizers import simulated_annealing
 
@@ -71,11 +72,11 @@ class FPM:
     amplitude.
     """
 
-    # Every solver's default, the value the MATLAB code used. data/_template lists them per method.
+    # Every solver's defaults; data/_template lists them per method.
     DEFAULTS = {
-        "upscale": 4,         # mag_image: object side length / measured side length
+        "upscale": 4,         # object side length / measured side length
         "alpha": 1.0,         # object-update regulariser, delta_1 in the paper
-        "beta": 1.0,          # pupil-update regulariser; the paper states delta_2 = 1000, the code uses 1
+        "beta": 1.0,          # pupil-update regulariser, delta_2 in the paper, which states 1000
         "seed": 0,
         "print_every": 10,    # progress of the long searches; 0 disables
     }
@@ -114,7 +115,7 @@ class FPM:
         self.defocus = float(model.get("defocus_m", 0.0))
         self.upscale = int(self.recon["upscale"])
 
-        # LED array, in millimetres like the MATLAB code
+        # LED array, in millimetres
         self.array_size = int(led["array_size"])
         self.led_pitch_mm = float(led["pitch_m"]) * 1e3
         self.led_height_mm = float(led["height_m"]) * 1e3
@@ -165,17 +166,17 @@ class FPM:
 
     @property
     def size_lr(self) -> int:
-        """Side length of one recorded frame, in pixels (``m1``)."""
+        """Side length of one recorded frame, in pixels."""
         return int(self.intensity.shape[-1])
 
     @property
     def size_hr(self) -> int:
-        """Side length of the reconstructed object, in pixels (``m``)."""
+        """Side length of the reconstructed object, in pixels."""
         return self.upscale * self.size_lr
 
     @property
     def pixel_size_object(self) -> float:
-        """Sensor pixel pitch referred to the sample plane (``spsize``)."""
+        """Sensor pixel pitch referred to the sample plane."""
         return self.pixel_size_sensor / self.magnification
 
     @property
@@ -185,7 +186,7 @@ class FPM:
 
     @property
     def dk(self) -> float:
-        """Frequency step of the object spectrum (``dkx = dky``)."""
+        """Frequency step of the object spectrum, the same along both axes."""
         return 2 * np.pi / (self.pixel_size_object / self.upscale * self.size_hr)
 
     @property
@@ -200,7 +201,7 @@ class FPM:
 
     @property
     def _scale(self) -> float:
-        """``(m1 / m)**2``, the energy scale between the object and one frame."""
+        """``(size_lr / size_hr)**2``, the energy scale between the object and one frame."""
         return (self.size_lr / self.size_hr) ** 2
 
     def _frequency_grid(self):
@@ -215,7 +216,7 @@ class FPM:
         return torch.as_tensor(support, device=self.device, dtype=self.complex_dtype)
 
     def _defocus_kernel(self) -> torch.Tensor:
-        """Angular-spectrum propagator over ``defocus_m`` (``H``); ones in focus."""
+        """Angular-spectrum propagator over ``defocus_m``; ones in focus."""
         kx, ky = self._frequency_grid()
         kz = np.sqrt((self.k0 ** 2 - kx ** 2 - ky ** 2).astype(np.complex128))
         kernel = np.exp(1j * self.defocus * kz.real) * np.exp(-self.defocus * kz.imag)
@@ -228,8 +229,9 @@ class FPM:
     def spectrum_centres(self, pose=None) -> np.ndarray:
         """``(N, 2)`` centres ``(x, y)`` of every LED's window for an array pose.
 
-        ``pose`` defaults to :attr:`nominal_pose`. This is ``fpmangle.m``
-        followed by ``(n + 1) / 2 + k / dk``, shifted to 0-based pixels.
+        ``pose`` defaults to :attr:`nominal_pose`. Each centre is the LED's
+        wavevector divided by :attr:`dk`, counted from the spectrum origin
+        ``(size_hr - 1) / 2``.
         """
         pose = self.nominal_pose if pose is None else np.asarray(pose, dtype=np.float64)
         kx, ky = illumination_wavevectors(self.led_grid, pose, self.sample_offset_mm, self.k0)
@@ -239,7 +241,7 @@ class FPM:
     def window(self, centre) -> tuple[int, int]:
         """Top-left corner ``(y0, x0)`` of the window centred on ``centre = (x, y)``."""
         half = (self.size_lr - 1) / 2
-        x0, y0 = (int(value) for value in matlab_round(np.asarray(centre) - half))
+        x0, y0 = (int(value) for value in round_half_away(np.asarray(centre) - half))
         if not (0 <= x0 <= self.size_hr - self.size_lr and 0 <= y0 <= self.size_hr - self.size_lr):
             raise ValueError(
                 f"Spectrum window at centre {tuple(np.round(centre, 2))} falls outside the "
@@ -267,7 +269,7 @@ class FPM:
     # ------------------------------------------------------------------
 
     def initial_spectrum(self) -> torch.Tensor:
-        """Zero-padded spectrum of the centre frame's intensity (``padarray(fftshift(fft2(I_145)))``)."""
+        """Zero-padded spectrum of the centre frame's intensity."""
         pad = (self.size_hr - self.size_lr) // 2
         spectrum = FT(self.intensity[self.centre_frame].to(self.complex_dtype))
         return torch.nn.functional.pad(spectrum, (pad, pad, pad, pad))
@@ -279,12 +281,9 @@ class FPM:
         """One LED's object and pupil update; ``spectrum`` is changed in place.
 
         Returns the new pupil and the error of the prediction made before the
-        update, ``(scale |psi| - I)**2`` for ``cost="legacy"`` (``errorpie`` in
-        ``pie_solver_coarse.m``) or ``((scale |psi|)**2 - I)**2`` for
-        ``"intensity"`` (Eq. 15 of the paper), summed over the frame.
-
-        The arithmetic follows the MATLAB expression order, so the two
-        implementations round the same way.
+        update, summed over the frame: ``(scale |psi| - I)**2`` for
+        ``cost="amplitude_vs_intensity"`` or ``((scale |psi|)**2 - I)**2`` for
+        ``"intensity"`` (Eq. 15 of the paper).
         """
         alpha = float(self.recon["alpha"])
         beta = float(self.recon["beta"])
@@ -295,12 +294,12 @@ class FPM:
         predicted_spectrum = self._scale * patch * self.transfer_function * pupil * self.defocus_kernel
         predicted_field = iFT(predicted_spectrum)
         predicted_amplitude = self._scale * predicted_field.abs()
-        if cost == "legacy":
+        if cost == "amplitude_vs_intensity":
             error = (predicted_amplitude - self.intensity[frame]).square().sum()
         elif cost == "intensity":
             error = (predicted_amplitude.square() - self.intensity[frame]).square().sum()
         else:
-            raise ValueError(f"cost must be 'legacy' or 'intensity', got {cost!r}")
+            raise ValueError(f"cost must be 'amplitude_vs_intensity' or 'intensity', got {cost!r}")
 
         # Replace the modulus by the measurement, keep the phase.
         corrected_field = self.upscale ** 2 * self.amplitude[frame] * torch.exp(1j * predicted_field.angle())
@@ -321,7 +320,7 @@ class FPM:
         return pupil, error
 
     def position_cost(self, spectrum, pupil, centre, frame: int) -> float:
-        """Intensity misfit of one frame for a trial window centre (``poscost`` in the MATLAB solvers)."""
+        """Intensity misfit of one frame for a trial window centre."""
         y0, x0 = self.window(centre)
         size = self.size_lr
         patch = spectrum[y0:y0 + size, x0:x0 + size]
@@ -364,11 +363,10 @@ class FPM:
     def reconstruct(self, centres, iterations: int, *, order=None, cost: str = "intensity",
                     plain_sweeps: int | None = None, search_radius: float | None = None,
                     rng: np.random.Generator | None = None):
-        """Sequential reconstruction from a fresh start, the loop shared by the MATLAB solvers.
+        """Sequential reconstruction from a fresh start, the loop every solver is built on.
 
         The first ``plain_sweeps`` sweeps keep ``centres`` fixed; every later
-        one anneals each LED's centre within ``search_radius`` first
-        (``tt >= 10`` in ``pie_solver.m`` and ``pie_solver_fine.m``).
+        one anneals each LED's centre within ``search_radius`` first.
         Returns the object spectrum, the pupil, the centres actually used and
         the error of every sweep.
         """
@@ -397,20 +395,21 @@ class FPM:
     def pie(self) -> ReconstructionResult:
         """Conventional FPM: the LED array at its nominal pose, no correction.
 
-        ``pie_solver.m`` with ``loop < 10``, as ``FPM_nosa_sa_or_pcsa.m`` ran
-        it. That solver rounds each centre to a whole pixel before cutting the
-        window, unlike the misalignment solvers; the rounding is kept.
+        Each centre is rounded to a whole pixel before its window is cut,
+        unlike in the misalignment solvers. With an even object size the
+        nominal centres sit on half pixels, so the rounding moves about half
+        of the windows by a pixel (``test_rounding_the_centres_costs_pie_accuracy``).
 
         ``result.loss`` holds the intensity misfit of every sweep (Eq. 15 of
         the paper), measured before each LED's update.
         """
         iterations = int(self.recon.get("iterations", 9))
-        centres = matlab_round(self.spectrum_centres())
+        centres = round_half_away(self.spectrum_centres())
         spectrum, pupil, centres, errors = self.reconstruct(centres, iterations)
         return self._result("pie", spectrum, pupil, centres, errors, pose=self.nominal_pose)
 
     def sa(self) -> ReconstructionResult:
-        """Conventional simulated-annealing position correction (``pie_solver.m``).
+        """Conventional simulated-annealing position correction.
 
         After ``plain_sweeps`` ordinary sweeps from the rounded nominal
         centres, every sweep anneals each LED's centre independently within
@@ -421,7 +420,7 @@ class FPM:
         plain_sweeps = int(self.recon.get("plain_sweeps", 9))
         radius = float(self.recon.get("search_radius_px", 10.0))
         rng = np.random.default_rng(int(self.recon["seed"]))
-        centres = matlab_round(self.spectrum_centres())
+        centres = round_half_away(self.spectrum_centres())
         spectrum, pupil, centres, errors = self.reconstruct(
             centres, iterations, plain_sweeps=plain_sweeps, search_radius=radius, rng=rng,
         )

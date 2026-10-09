@@ -5,9 +5,9 @@ is also the order of the frames in the stored measurements. Positions are in
 millimetres; ``x`` grows to the right and ``y`` upward.
 
 A pose is the vector ``(x_mm, y_mm, theta_rad, height_mm)``: the global shift
-of the array, its in-plane rotation and its distance to the sample. It is the
-``zz`` vector of the MATLAB code, kept in the same order and units so the
-annealing steps mean the same thing.
+of the array, its in-plane rotation and its distance to the sample. The
+rotation stays in radians because the annealer's step lengths are in the
+pose's own units.
 """
 
 from __future__ import annotations
@@ -27,13 +27,13 @@ def led_grid(array_size: int, pitch_mm: float) -> np.ndarray:
 def spiral_order(array_size: int) -> np.ndarray:
     """Raster indices of the LEDs in the order they are used, spiralling out from the centre.
 
-    A port of ``gseq.m``: the walk alternates between the row and the column
+    The walk alternates between the row and the column
     direction with legs of length 1, 1, 2, 2, 3, 3, ..., so the first ``n**2``
     entries are exactly the central ``n x n`` block for every odd ``n``.
     """
     if array_size < 1 or array_size % 2 == 0:
         raise ValueError(f"array_size must be a positive odd number, got {array_size}")
-    centre = (array_size + 1) // 2  # 1-based, as gseq(9, 9, 17)
+    centre = (array_size + 1) // 2  # 1-based row and column of the centre LED
     rows = [centre]
     cols = [centre]
     dx, dy = 1, -1
@@ -65,7 +65,7 @@ def spiral_order(array_size: int) -> np.ndarray:
 
 
 def illumination_wavevectors(grid_mm: np.ndarray, pose, sample_offset_mm, k0: float):
-    """Transverse wavevectors ``(kx, ky)`` of every LED, a port of ``fpmangle.m``.
+    """Transverse wavevectors ``(kx, ky)`` of every LED.
 
     The array is rotated by ``theta`` about its own centre, shifted by
     ``(x_mm, y_mm)`` and placed ``height_mm`` below the sample. Each LED is seen

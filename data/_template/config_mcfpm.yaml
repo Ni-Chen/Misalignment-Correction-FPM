@@ -1,25 +1,25 @@
-# mcFPM, the method of the paper (main.m, pie_solver_coarse.m, pie_solver_fine.m).
+# mcFPM, the method of the paper.
 # Only algorithm settings belong here. Every key is optional and defaults to
-# the value shown, which is what main.m runs.
+# the value shown.
 
 upscale: 4
 
 # Coarse: anneal the array pose, scoring each candidate by a short reconstruction
-coarse_iterations: 10         # sweeps per cost evaluation (loop = 10; the paper says J = 5)
-coarse_array_size: 17         # LEDs per side used in the cost: 17 = mcFPM II (main.m), 5 = mcFPM I
-coarse_cost: legacy           # legacy: modelled amplitude vs measured intensity, as the code does
-                              # intensity: intensity vs intensity, Eq. 15 of the paper
-anneal_max_iterations: 100    # MaxIter
-anneal_function_tolerance: 1.0e-3   # TolFun
-anneal_initial_temperature: 100.0   # simulannealbnd default
-pose_bounds:                  # vlb / vub, relative to the nominal array
+coarse_iterations: 10         # sweeps per cost evaluation (the paper says J = 5)
+coarse_array_size: 17         # LEDs per side used in the cost: 17 = mcFPM II, 5 = mcFPM I
+coarse_cost: amplitude_vs_intensity   # modelled amplitude vs measured intensity
+                                       # intensity: intensity vs intensity, Eq. 15 of the paper
+anneal_max_iterations: 100
+anneal_function_tolerance: 1.0e-3   # stop once the best cost changes less than this per iteration
+anneal_initial_temperature: 100.0   # in the units of the pose: mm, rad
+pose_bounds:                  # search box, relative to the nominal array
   x_mm: [-4.0, 4.0]
   y_mm: [-4.0, 4.0]
   rotation_deg: [0.0, 0.0]    # equal bounds hold a parameter fixed; [-2, 2] is the paper's "modified mcFPM"
   height_mm: [0.0, 0.0]
 
 # Fine: reconstruct with the annealed pose
-fine_iterations: 2            # loop = 2 in main.m
+fine_iterations: 2            # sweeps over all LEDs with the annealed pose
 fine_plain_sweeps: 9          # from this sweep on each LED's centre is annealed too (mcFPM III);
                               # never reached with fine_iterations: 2
 fine_search_radius_px: 3.0

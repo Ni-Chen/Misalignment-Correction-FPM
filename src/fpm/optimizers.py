@@ -1,26 +1,17 @@
-"""Simulated annealing with the defaults of MATLAB's ``simulannealbnd``.
+"""Simulated annealing in a box.
 
-Every misalignment search in this repository -- the global LED pose of mcFPM
-and the per-LED spectrum positions of SA and pcFPM -- was run through
-``simulannealbnd`` with only ``TolFun`` and ``MaxIter`` changed. This module
-reproduces that algorithm rather than substituting another global optimiser,
-so that the search behaves the same way:
+Every misalignment search -- the global LED pose of mcFPM and the per-LED
+spectrum positions of SA and pcFPM -- runs on this annealer:
 
-* ``annealingfast``: a step of length ``T`` in a uniformly random direction;
-* ``sahonorbounds``: a step leaving the box is projected onto it and then
-  replaced by a random convex combination of that projection and the current
-  point, so a dimension with equal bounds stays fixed;
-* ``acceptancesa``: a worse point is accepted with probability
-  ``1 / (1 + exp(delta / T))``;
-* ``temperatureexp``: ``T = T0 * 0.95**k`` with ``T0 = 100``;
+* a step of length ``T`` in a uniformly random direction;
+* a step leaving the box is projected onto it and then replaced by a random
+  convex combination of that projection and the current point, so a
+  dimension with equal bounds stays fixed;
+* a worse point is accepted with probability ``1 / (1 + exp(delta / T))``;
+* ``T = T0 * 0.95**k`` with ``T0 = 100``;
 * stopping after ``max_iterations``, ``3000 * n`` function evaluations, or
   once the best value has changed by less than ``function_tolerance`` per
   iteration on average over the last ``500 * n`` iterations.
-
-Reannealing (MATLAB's ``ReannealInterval``) is not implemented: it rescales
-the temperature from gradient estimates after every 100 accepted points,
-which the 100-iteration pose search never reaches. The random streams differ
-from MATLAB's, so individual runs are not reproducible across the two.
 """
 
 from __future__ import annotations

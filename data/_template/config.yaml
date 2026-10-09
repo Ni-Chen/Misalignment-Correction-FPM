@@ -8,7 +8,7 @@ dataset:
 data:
   file: raw/replace_me.mat
   key: imSeqLowRes
-  layout: HWI                 # any explicit I/H/W order; the MATLAB stacks are HWI
+  layout: HWI                 # any explicit I/H/W order of frames, rows and columns
 
 optics:
   wavelength_m: 6.297e-7
@@ -23,12 +23,11 @@ led:
 
 model:
   # Centre of the reconstructed patch in the sample plane, relative to the
-  # optical axis: image_center in the MATLAB code, with x = image_center(2)
-  # and y = image_center(1). A patch whose centre is r rows below and c
-  # columns right of the sensor centre has image_center = [-r -c] px, so
+  # optical axis. A patch whose centre is r rows below and c columns right of
+  # the sensor centre has
   #   sample_offset_x_mm = -c x 1.625e-3,  sample_offset_y_mm = -r x 1.625e-3
   # (6.5 um pixels / 4x). The signs were checked by locating every dataset's
-  # centre frame in the full sensor frame: [700 600] is 700 px up, 600 px left.
+  # centre frame in the full sensor frame.
   sample_offset_x_mm: 0.0
   sample_offset_y_mm: 0.0
   defocus_m: 0.0

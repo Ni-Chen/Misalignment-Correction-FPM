@@ -1,7 +1,7 @@
 dataset:
   name: root_middle_upper_left
   notes: >-
-    Young plant root, 500 px above and 400 px left of the sensor centre (image_center = [500 400]). No script refers to it.
+    Young plant root, 500 px above and 400 px left of the sensor centre.
 
 data:
   file: raw/20170531-3-500400.mat

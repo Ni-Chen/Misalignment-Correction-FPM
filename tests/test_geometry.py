@@ -1,17 +1,17 @@
-"""LED geometry, update order and rounding: the ports of gseq.m, fpmangle.m and MATLAB's round."""
+"""LED geometry, update order and rounding."""
 
 from __future__ import annotations
 
 import numpy as np
 import pytest
 
-from fpm import illumination_wavevectors, led_grid, matlab_round, spiral_order
+from fpm import illumination_wavevectors, led_grid, round_half_away, spiral_order
 from support import cpu_model, simulated_dataset
 
 
-def test_matlab_round_rounds_half_away_from_zero():
+def test_round_half_away_from_zero():
     values = np.array([-2.5, -1.5, -0.5, 0.5, 1.5, 2.5, 192.5, 1.4999])
-    assert matlab_round(values).tolist() == [-3, -2, -1, 1, 2, 3, 193, 1]
+    assert round_half_away(values).tolist() == [-3, -2, -1, 1, 2, 3, 193, 1]
 
 
 @pytest.mark.parametrize("array_size", [1, 3, 5, 17])
@@ -22,9 +22,9 @@ def test_spiral_visits_every_led_once_with_unit_steps(array_size):
     assert np.all(np.abs(np.diff(rows)) + np.abs(np.diff(cols)) == 1)
 
 
-def test_spiral_matches_gseq_and_covers_central_blocks():
+def test_spiral_starts_at_the_centre_and_covers_central_blocks():
     order = spiral_order(17)
-    # gseq(9, 9, 17) in MATLAB, minus one
+    # The centre LED, then one turn around it.
     assert order[:9].tolist() == [144, 161, 160, 143, 126, 127, 128, 145, 162]
     for size in (1, 3, 5, 7):
         rows, cols = np.divmod(order[: size ** 2], 17)
@@ -45,7 +45,7 @@ def test_led_grid_is_raster_from_top_left():
     assert grid[8].tolist() == [4.0, -4.0]
 
 
-def test_wavevectors_follow_fpmangle():
+def test_wavevectors_match_the_geometry_by_hand():
     grid = led_grid(17, 4.0)
     k0 = 2 * np.pi / 6.297e-7
     pose = (0.3, -0.2, np.deg2rad(1.0), 113.5)
@@ -66,8 +66,7 @@ def test_centre_led_of_an_aligned_array_sits_between_the_middle_pixels(tmp_path)
     centres = model.spectrum_centres()
     origin = (model.size_hr - 1) / 2
     assert centres[model.centre_frame].tolist() == [origin, origin]
-    # (n + 1) / 2 - (m1 - 1) / 2 in MATLAB's 1-based indices, i.e. the block whose
-    # middle pixel is the zero frequency of fftshift.
+    # The block whose middle pixel is the zero frequency of fftshift.
     assert model.window(centres[model.centre_frame]) == ((model.size_hr - model.size_lr) // 2,) * 2
     # Mirror-symmetric array, mirror-symmetric centres.
     assert np.allclose(centres[::-1] - origin, -(centres - origin))

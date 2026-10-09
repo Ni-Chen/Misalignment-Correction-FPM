@@ -91,9 +91,9 @@ def load_config(dataset_dir: str | Path, method: str) -> dict[str, Any]:
     ``config.yaml`` describes the stored data and the optical system.
     ``config_<method>.yaml`` holds solver parameters only and is optional: a
     missing file, or a missing key, takes the default listed in
-    ``data/_template``, which reproduces the MATLAB code. A method file may
-    also override ``model.sample_offset_*`` to reproduce the geometry a
-    particular MATLAB script used.
+    ``data/_template``. A method file may also override
+    ``model.sample_offset_*`` to place the segment differently for that
+    method alone.
     """
     dataset_path = Path(dataset_dir).expanduser().resolve()
     method_name = str(method).lower()

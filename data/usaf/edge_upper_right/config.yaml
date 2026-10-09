@@ -1,7 +1,7 @@
 dataset:
   name: usaf_edge_upper_right
   notes: >-
-    USAF target, edge segment: the edge segment of the paper's Fig. 6 and "outer part data" in main.m, 550 px above and 750 px right of the sensor centre (image_center = [550 -750]; main.m notes the true offset as about 2.4 x this). main.m itself runs it with [300 300] px, which config_mcfpm.yaml keeps to reproduce that script; mcFPM anneals a shift that puts the patch at (x, y) = (-2.69, 2.41) mm, close to 2.4 x [550 -750] px = (-2.93, 2.15) mm.
+    USAF target, the edge segment of the paper's Fig. 6, 550 px above and 750 px right of the sensor centre.
 
 data:
   file: raw/20170604-1-400.mat

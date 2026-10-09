@@ -1,7 +1,7 @@
 dataset:
   name: usaf_center
   notes: >-
-    High-resolution USAF target, centre segment: the centre segment of the paper's Fig. 6 and "inner part data" in main.m. Its centre frame sits within 2 px of the sensor centre.
+    High-resolution USAF target, the centre segment of the paper's Fig. 6. Its centre frame sits within 2 px of the sensor centre.
 
 data:
   file: raw/20170604-3.mat

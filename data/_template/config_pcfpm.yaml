@@ -1,16 +1,16 @@
-# pcFPM: per-LED annealing plus a rigid array fit (pie_solver_led.m).
+# pcFPM: per-LED annealing plus a rigid array fit.
 # Only algorithm settings belong here. Every key is optional and defaults to
 # the value shown.
 
 upscale: 4
-iterations: 9                 # outer iterations; each restarts the object and pupil (loop)
-sweeps_per_iteration: 11      # the last one anneals every LED's centre (tt1 = 1..11)
-search_radius_px: 12.0        # dkshift
+iterations: 9                 # outer iterations; each restarts the object and pupil
+sweeps_per_iteration: 11      # the last one anneals every LED's centre
+search_radius_px: 12.0        # spectrum pixels around each LED's centre
 search_radius_divisor: 1.3    # radius / 1.3 ...
-divided_search_iterations: 8  # ... in the first 8 outer iterations (tt < 9)
+divided_search_iterations: 8  # ... in the first 8 outer iterations
 fit_array_size: 5             # only the central 5 x 5 LEDs enter the array fit ...
-fit_warmup_iterations: 5      # ... in the first 5 outer iterations (tt < 6)
-pose_bounds:                  # fmincon bounds, relative to the nominal array
+fit_warmup_iterations: 5      # ... in the first 5 outer iterations
+pose_bounds:                  # of the array fit, relative to the nominal array
   x_mm: [-4.0, 4.0]
   y_mm: [-4.0, 4.0]
   rotation_deg: [-2.0, 2.0]

@@ -2,8 +2,7 @@
 
 The frames are made with the reconstruction's own forward model (see the
 module docstring of :mod:`fpm.model`), so a solver that finds the right pose
-can fit them exactly. This is the reference the solvers are tested against,
-in place of MATLAB output the port could not be compared with.
+can fit them exactly. This is the reference the solvers are tested against.
 """
 
 from __future__ import annotations
@@ -28,7 +27,7 @@ def _read_gray(path: Path) -> np.ndarray:
 
     image = np.asarray(tifffile.imread(path), dtype=np.float64)
     if image.ndim == 3:
-        # rgb2gray's weights
+        # ITU-R BT.601 luma weights
         image = image[..., :3] @ np.array([0.2989, 0.5870, 0.1140])
     return image
 
@@ -40,7 +39,7 @@ def _resize(image: np.ndarray, size: int) -> np.ndarray:
 def load_object(size: int, *, amplitude_path: str | Path = ASSETS / "4.2.03.tiff",
                 phase_path: str | Path = ASSETS / "5.2.09.tiff",
                 phase_range: float = 0.5 * np.pi) -> np.ndarray:
-    """The complex test object of ``FPM_half_sim1.m``.
+    """A complex test object built from two standard images.
 
     The amplitude is the square root of the grey-scale mandrill, the phase
     the aerial image stretched to ``[0, phase_range]``, both resized to
@@ -61,7 +60,7 @@ def simulate(config: dict[str, Any], object_field: np.ndarray, pose=None, *,
     ``object size / upscale``. ``pose`` is ``(x_mm, y_mm, theta_rad, height_mm)``
     and defaults to the nominal array. ``peak_intensity`` rescales the stack
     so that its brightest pixel has that value, which matters for the
-    ``legacy`` mcFPM cost: it mixes amplitude and intensity and therefore
+    ``amplitude_vs_intensity`` mcFPM cost: it mixes amplitude and intensity and therefore
     depends on the absolute level of the data.
     """
     object_field = np.asarray(object_field)

@@ -49,7 +49,7 @@ Fig. 2: Experimental results of a USAF resolution target. Two segments (a) and (
 
 ## Reconstruction comparisons
 
-The same measurements are reconstructed with conventional FPM (PIE) and with mcFPM, by the Python implementation in this repository using the settings of the original `main.m`.
+The same measurements are reconstructed with conventional FPM (PIE) and with mcFPM, by the Python implementation in this repository using the default settings in `data/_template`.
 
 *Data: our own FPM setup. 4× / 0.1 NA objective, 629.7 nm LEDs, 17 × 17 LEDs at 4 mm pitch, 113.5 mm below the sample, PCO.edge 4.2 camera (6.5 µm pixels). Segments of 128 × 128 pixels (200 × 200 for the root centre), reconstructed at 4× the sampling.*
 
@@ -69,7 +69,7 @@ Each column is one segment, named after where it lies on the sensor in the raw f
   </tbody>
 </table>
 
-Away from the centre, conventional FPM leaves stripes in the amplitude and a strong low-frequency pattern in the phase; after mcFPM's shift correction both are gone (`root/edge_upper_left` is the exception on the PIE side, see the notes below). The figure compares the two methods as they were run, and they differ in more than the geometry: PIE rounds every LED's spectrum position to a whole pixel and runs nine sweeps, while the final mcFPM reconstruction of `main.m` runs two. That is why the two centre segments, where mcFPM finds almost no shift, still differ in phase. The table below isolates the geometry.
+Away from the centre, conventional FPM leaves stripes in the amplitude and a strong low-frequency pattern in the phase; after mcFPM's shift correction both are gone (`root/edge_upper_left` is the exception on the PIE side, see the notes below). The figure compares the two methods as they were run, and they differ in more than the geometry: PIE rounds every LED's spectrum position to a whole pixel and runs nine sweeps, while the final mcFPM reconstruction runs two. That is why the two centre segments, where mcFPM finds almost no shift, still differ in phase. The table below isolates the geometry.
 
 
 **Reproduce:** `python tools/run_all.py --methods pie mcfpm`, then `python tools/summarize_results.py --wide --refit 9 --output docs/img/comparison_pie_mcfpm.png`. The measurements are in `data/` of the repository.

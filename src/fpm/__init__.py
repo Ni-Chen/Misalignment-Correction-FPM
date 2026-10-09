@@ -11,7 +11,7 @@ directory, pick a method, call ``run()``.
 
 from .config import DATA_ROOT, OUTPUT_ROOT, dataset_name, load_config, output_dir
 from .data import IntensityData, load_intensity
-from .fourier import FT, iFT, matlab_round
+from .fourier import FT, iFT, round_half_away
 from .illumination import illumination_wavevectors, led_grid, spiral_order
 from .model import FPM, ReconstructionResult, run_experiment
 from .optimizers import simulated_annealing
@@ -32,8 +32,8 @@ __all__ = [
     "led_grid",
     "load_config",
     "load_intensity",
-    "matlab_round",
     "output_dir",
+    "round_half_away",
     "run_experiment",
     "save_summary",
     "simulated_annealing",

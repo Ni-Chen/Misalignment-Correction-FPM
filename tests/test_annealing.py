@@ -1,4 +1,4 @@
-"""The simulannealbnd reimplementation and the pcFPM array fit."""
+"""The simulated annealer and the pcFPM array fit."""
 
 from __future__ import annotations
 

@@ -1,16 +1,16 @@
-# Conventional simulated-annealing position correction (pie_solver.m with loop >= 10).
+# Conventional simulated-annealing position correction, every LED on its own.
 # Only algorithm settings belong here. Every key is optional and defaults to
 # the value shown.
 
 upscale: 4
-iterations: 10                # sweeps; the MATLAB scripts never set loop > 9, 10 gives one searching sweep
-plain_sweeps: 9               # sweeps before the per-LED search starts (tt < 10)
-search_radius_px: 10.0        # each LED's centre is annealed within +/- this many spectrum pixels (dkshift)
+iterations: 10                # sweeps over all LEDs; with plain_sweeps: 9 the last one searches
+plain_sweeps: 9               # sweeps before the per-LED search starts
+search_radius_px: 10.0        # each LED's centre is annealed within +/- this many spectrum pixels
 alpha: 1.0
 beta: 1.0
 seed: 0
 
-# simulannealbnd defaults for the per-LED search; TolFun is the MATLAB setting
+# Stopping rule of the per-LED search
 search_function_tolerance: 1.0e-3
 search_stall_iterations: 1000         # 500 x 2 variables
 search_max_function_evaluations: 6000 # 3000 x 2 variables
