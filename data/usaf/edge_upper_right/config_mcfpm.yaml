@@ -1,0 +1,26 @@
+# main.m as committed: mcFPM II (all 17 x 17 LEDs in the cost), 10 coarse
+# sweeps, the legacy cost, shift annealed within +/- 4 mm, rotation and height
+# fixed, 2 final sweeps. These are the defaults of data/_template/config_mcfpm.yaml,
+# written out so the reproduction does not depend on them.
+#
+# main.m also places this patch at image_center = [300 300] px rather than where
+# it was cut, [550 -750] px (config.yaml); the annealed shift absorbs the
+# difference. Delete the model block to start from the measured position.
+
+model:
+  sample_offset_x_mm: 0.4875    # [300 300] px x 1.625e-3 mm, as main.m
+  sample_offset_y_mm: 0.4875
+
+upscale: 4
+coarse_iterations: 10
+coarse_array_size: 17
+coarse_cost: legacy
+anneal_max_iterations: 100
+anneal_function_tolerance: 1.0e-3
+pose_bounds:
+  x_mm: [-4.0, 4.0]
+  y_mm: [-4.0, 4.0]
+  rotation_deg: [0.0, 0.0]
+  height_mm: [0.0, 0.0]
+fine_iterations: 2
+seed: 0

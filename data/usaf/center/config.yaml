@@ -1,0 +1,25 @@
+dataset:
+  name: usaf_center
+  notes: >-
+    High-resolution USAF target, centre segment: the centre segment of the paper's Fig. 6 and "inner part data" in main.m. Its centre frame sits within 2 px of the sensor centre.
+
+data:
+  file: raw/20170604-3.mat
+  key: imSeqLowRes
+  layout: HWI
+
+optics:
+  wavelength_m: 6.297e-7
+  na: 0.1
+  magnification: 4.0
+  pixel_size_sensor_m: 6.5e-6
+
+led:
+  array_size: 17
+  pitch_m: 4.0e-3
+  height_m: 113.5e-3
+
+model:
+  sample_offset_x_mm: 0     # +0 px x 1.625e-3 mm
+  sample_offset_y_mm: 0     # +0 px x 1.625e-3 mm
+  defocus_m: 0.0

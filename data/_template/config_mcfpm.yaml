@@ -1,0 +1,34 @@
+# mcFPM, the method of the paper (main.m, pie_solver_coarse.m, pie_solver_fine.m).
+# Only algorithm settings belong here. Every key is optional and defaults to
+# the value shown, which is what main.m runs.
+
+upscale: 4
+
+# Coarse: anneal the array pose, scoring each candidate by a short reconstruction
+coarse_iterations: 10         # sweeps per cost evaluation (loop = 10; the paper says J = 5)
+coarse_array_size: 17         # LEDs per side used in the cost: 17 = mcFPM II (main.m), 5 = mcFPM I
+coarse_cost: legacy           # legacy: modelled amplitude vs measured intensity, as the code does
+                              # intensity: intensity vs intensity, Eq. 15 of the paper
+anneal_max_iterations: 100    # MaxIter
+anneal_function_tolerance: 1.0e-3   # TolFun
+anneal_initial_temperature: 100.0   # simulannealbnd default
+pose_bounds:                  # vlb / vub, relative to the nominal array
+  x_mm: [-4.0, 4.0]
+  y_mm: [-4.0, 4.0]
+  rotation_deg: [0.0, 0.0]    # equal bounds hold a parameter fixed; [-2, 2] is the paper's "modified mcFPM"
+  height_mm: [0.0, 0.0]
+
+# Fine: reconstruct with the annealed pose
+fine_iterations: 2            # loop = 2 in main.m
+fine_plain_sweeps: 9          # from this sweep on each LED's centre is annealed too (mcFPM III);
+                              # never reached with fine_iterations: 2
+fine_search_radius_px: 3.0
+
+alpha: 1.0
+beta: 1.0
+seed: 0
+print_every: 10               # annealing progress every N iterations; 0 disables
+
+search_function_tolerance: 1.0e-3
+search_stall_iterations: 1000
+search_max_function_evaluations: 6000

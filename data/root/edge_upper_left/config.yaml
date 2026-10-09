@@ -1,0 +1,25 @@
+dataset:
+  name: root_edge_upper_left
+  notes: >-
+    Young plant root, edge segment 700 px above and 600 px left of the sensor centre (image_center = [700 600]): "outersider part bio-data", the dataset of FPM_nosa_sa_or_pcsa.m. That script uses 2.28 x this offset ("around the true value"); its config_pie/sa/pcfpm.yaml reproduce that.
+
+data:
+  file: raw/20170531-3-700600.mat
+  key: imSeqLowRes
+  layout: HWI
+
+optics:
+  wavelength_m: 6.297e-7
+  na: 0.1
+  magnification: 4.0
+  pixel_size_sensor_m: 6.5e-6
+
+led:
+  array_size: 17
+  pitch_m: 4.0e-3
+  height_m: 113.5e-3
+
+model:
+  sample_offset_x_mm: 0.975     # +600 px x 1.625e-3 mm
+  sample_offset_y_mm: 1.1375     # +700 px x 1.625e-3 mm
+  defocus_m: 0.0

@@ -1,0 +1,15 @@
+# Conventional FPM, no position correction (pie_solver.m with loop < 10).
+# Only algorithm settings belong here; anything that describes the instrument
+# or the stored data belongs in config.yaml. Every key is optional and
+# defaults to the value shown, which is the MATLAB one.
+
+upscale: 4                    # object side length / measured side length (mag_image)
+iterations: 9                 # sweeps over all LEDs (loop in FPM_nosa_sa_or_pcsa.m)
+alpha: 1.0                    # object-update regulariser (delta_1 in the paper)
+beta: 1.0                     # pupil-update regulariser; the paper states delta_2 = 1000, the code uses 1
+
+# A method file may override the patch position to reproduce the geometry a
+# MATLAB script used, without changing the instrument facts in config.yaml:
+# model:
+#   sample_offset_x_mm: 0.0
+#   sample_offset_y_mm: 0.0

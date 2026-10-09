@@ -1,0 +1,25 @@
+dataset:
+  name: root_inner_upper_left_far
+  notes: >-
+    Young plant root, 300 px above and 300 px left of the sensor centre (image_center = [300 300]): the segment of the paper's Fig. 8 method comparison and "outerpart bio-data" in main.m. main.m notes the true offset as about 2.5 x this, FPM_nosa_sa_or_pcsa.m tried 1.5 x; the measured value is kept here and mcFPM is left to find the shift.
+
+data:
+  file: raw/20170531-3-300.mat
+  key: imSeqLowRes
+  layout: HWI
+
+optics:
+  wavelength_m: 6.297e-7
+  na: 0.1
+  magnification: 4.0
+  pixel_size_sensor_m: 6.5e-6
+
+led:
+  array_size: 17
+  pitch_m: 4.0e-3
+  height_m: 113.5e-3
+
+model:
+  sample_offset_x_mm: 0.4875     # +300 px x 1.625e-3 mm
+  sample_offset_y_mm: 0.4875     # +300 px x 1.625e-3 mm
+  defocus_m: 0.0
