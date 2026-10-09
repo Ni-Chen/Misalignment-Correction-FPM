@@ -1,0 +1,15 @@
+**/__pycache__/**
+**/.ipynb_checkpoints/**
+.pytest_cache/
+.venv/
+*.egg-info/
+
+# Solver results; data/ holds acquisitions only
+notebooks/output/
+
+# MATLAB autosave
+*.asv
+
+# Jekyll build output; GitHub Pages builds the site itself
+docs/_site/
+docs/.jekyll-cache/

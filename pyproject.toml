@@ -1,0 +1,26 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "misalignment-correction-fpm"
+version = "0.1.0"
+description = "Config-driven FPM reconstruction with LED misalignment correction (mcFPM, pcFPM, SA)"
+requires-python = ">=3.10"
+dependencies = [
+  "matplotlib",
+  "numpy",
+  "PyYAML",
+  "scipy",
+  "tifffile",
+  "torch",
+]
+
+[project.optional-dependencies]
+test = ["pytest"]
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]
